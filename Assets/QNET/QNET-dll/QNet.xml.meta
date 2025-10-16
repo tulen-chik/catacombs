@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 10b054ea9d96c8641aa0325857a0d7e5
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 158361
+  packageName: Q-Net (Network Library)
+  packageVersion: 1.1
+  assetPath: Assets/QNET/QNET-dll/QNet.xml
+  uploadId: 370963

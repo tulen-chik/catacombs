@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ad1382b71abb80a4081a7ad9e4231953
+timeCreated: 1575861641
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 158361
+  packageName: Q-Net (Network Library)
+  packageVersion: 1.1
+  assetPath: Assets/QNET/Sample_Client_QNET.zip
+  uploadId: 370963

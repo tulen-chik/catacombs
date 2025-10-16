@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7159793947dcd8243a2f7338dcbaa97f
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 158361
+  packageName: Q-Net (Network Library)
+  packageVersion: 1.1
+  assetPath: Assets/QNET/Q-NET_readMe.txt
+  uploadId: 370963

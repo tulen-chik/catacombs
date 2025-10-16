@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ce738161cae3946448ffbc0d2aea63da
+timeCreated: 1590472241
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 158361
+  packageName: Q-Net (Network Library)
+  packageVersion: 1.1
+  assetPath: Assets/QNET/Q-Net_readMe(eng).txt
+  uploadId: 370963

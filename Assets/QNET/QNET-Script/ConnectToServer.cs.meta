@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: ff8781e4308e4944b92a7d7764fefb57
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 158361
+  packageName: Q-Net (Network Library)
+  packageVersion: 1.1
+  assetPath: Assets/QNET/QNET-Script/ConnectToServer.cs
+  uploadId: 370963
