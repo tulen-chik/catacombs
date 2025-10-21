@@ -2,6 +2,18 @@ using UnityEngine;
 using MySql.Data.MySqlClient;
 using System;
 using System.Data;
+using System.Collections.Generic; // <--- 1. ДОБАВЛЕНО: для использования List<>
+
+/// <summary>
+/// Простой класс для хранения данных о персонаже, полученных из базы данных.
+/// </summary>
+public class CharacterData
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string Gender { get; set; }
+    public bool IsNpc { get; set; }
+}
 
 public class DatabaseManager : MonoBehaviour
 {
@@ -319,6 +331,7 @@ public class DatabaseManager : MonoBehaviour
         return npcNames;
     }
 
+    /// <summary>
     /// Получает список всех событий, которые могут привести к указанной концовке.
     /// </summary>
     /// <returns>Список описаний событий, связанных с конкретной концовкой.</returns>
