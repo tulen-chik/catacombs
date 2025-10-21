@@ -64,6 +64,8 @@
     <Compile Include="Assets\QNET\QNET-Script\ConnectToServer.cs" />
     <Compile Include="Assets\scripts\FPSController.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
+    <Compile Include="Assets\scripts\SettingsManager.cs" />
+    <Compile Include="Assets\scripts\Menu_Managment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\QNET\QNET-dll\QNet.xml" />
