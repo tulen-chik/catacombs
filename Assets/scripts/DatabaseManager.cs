@@ -156,6 +156,209 @@ public class DatabaseManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Получает полную информацию о конкретном персонаже по его ID.
+    /// </summary>
+    /// <returns>Объект с данными персонажа или null, если он не найден.</returns>
+    public CharacterData GetCharacterDetails(long characterId)
+    {
+        Debug.Log($"--- Получение данных для персонажа ID={characterId} ---");
+        CharacterData characterData = null;
+
+        // Запрос выбирает все основные поля из таблицы Character
+        string sql = "SELECT name, age, gender, character_NPC FROM `Character` WHERE id_character = @char_id";
+        MySqlCommand cmd = new MySqlCommand(sql, connection);
+        cmd.Parameters.AddWithValue("@char_id", characterId);
+
+        try
+        {
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.Read()) // Если персонаж найден
+                {
+                    characterData = new CharacterData
+                    {
+                        Name = reader.GetString("name"),
+                        Age = reader.GetInt32("age"),
+                        Gender = reader.GetString("gender"),
+                        IsNpc = reader.GetBoolean("character_NPC")
+                    };
+                    Debug.Log($"Найден персонаж: {characterData.Name}, возраст: {characterData.Age}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Персонаж с ID={characterId} не найден.");
+                }
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Debug.LogError($"Ошибка при получении данных персонажа: {ex.Message}");
+        }
+
+        return characterData;
+    }
+
+    /// <summary>
+    /// Получает список всех квестов, которые доступны персонажу по возрасту.
+    /// </summary>
+    /// <returns>Список названий доступных квестов.</returns>
+    public List<string> GetAvailableQuestsForCharacter(long characterId)
+    {
+        Debug.Log($"--- Поиск доступных квестов для персонажа ID={characterId} ---");
+        List<string> availableQuests = new List<string>();
+
+        // Этот запрос соединяет таблицы Character и Quests, чтобы сравнить возраст персонажа
+        // с требуемым возрастом для каждого квеста.
+        string sql = @"
+            SELECT q.completion_condition 
+            FROM `Character` c, Quests q 
+            WHERE c.id_character = @char_id AND c.age >= q.condition_of_age_start";
+
+        MySqlCommand cmd = new MySqlCommand(sql, connection);
+        cmd.Parameters.AddWithValue("@char_id", characterId);
+
+        try
+        {
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read()) // Проходим по всем найденным квестам
+                {
+                    availableQuests.Add(reader.GetString("completion_condition"));
+                }
+            }
+            Debug.Log($"Найдено доступных квестов: {availableQuests.Count}");
+        }
+        catch (MySqlException ex)
+        {
+            Debug.LogError($"Ошибка при поиске квестов: {ex.Message}");
+        }
+
+        return availableQuests;
+    }
+
+    /// <summary>
+    /// Получает информацию о награде за выполнение конкретного квеста.
+    /// </summary>
+    /// <returns>Название предмета-награды или null, если награды нет или квест не найден.</returns>
+    public string GetQuestRewardItemName(int questId)
+    {
+        Debug.Log($"--- Получение награды за квест ID={questId} ---");
+        string rewardItemName = null;
+
+        // Запрос соединяет таблицы Quests и Items по внешнему ключу,
+        // чтобы получить имя предмета из таблицы Items по ID, указанному в квесте.
+        string sql = @"
+            SELECT i.name 
+            FROM Quests q
+            JOIN Items i ON q.id_items = i.id_items
+            WHERE q.id_quests = @quest_id";
+
+        MySqlCommand cmd = new MySqlCommand(sql, connection);
+        cmd.Parameters.AddWithValue("@quest_id", questId);
+
+        try
+        {
+            // Используем ExecuteScalar, так как нам нужно только одно значение (имя предмета)
+            object result = cmd.ExecuteScalar();
+
+            if (result != null)
+            {
+                rewardItemName = Convert.ToString(result);
+                Debug.Log($"Награда за квест ID={questId}: '{rewardItemName}'");
+            }
+            else
+            {
+                Debug.LogWarning($"Награда для квеста ID={questId} не найдена.");
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Debug.LogError($"Ошибка при получении награды: {ex.Message}");
+        }
+
+        return rewardItemName;
+    }
+
+    /// <summary>
+    /// Находит всех персонажей (NPC), которые находятся в определенной локации (чекпоинте).
+    /// </summary>
+    /// <returns>Список имен NPC в указанной локации.</returns>
+    public List<string> FindNpcsByLocation(string locationName)
+    {
+        Debug.Log($"--- Поиск NPC в локации: '{locationName}' ---");
+        List<string> npcNames = new List<string>();
+
+        // Этот запрос соединяет таблицы Character и Checkpoint, чтобы отфильтровать
+        // персонажей по названию их текущего чекпоинта.
+        string sql = @"
+            SELECT c.name 
+            FROM `Character` c
+            JOIN Checkpoint ch ON c.id_checkpoint = ch.id_checkpoint
+            WHERE c.character_NPC = TRUE AND ch.name = @location_name";
+
+        MySqlCommand cmd = new MySqlCommand(sql, connection);
+        cmd.Parameters.AddWithValue("@location_name", locationName);
+
+        try
+        {
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    npcNames.Add(reader.GetString("name"));
+                }
+            }
+            Debug.Log($"В локации '{locationName}' найдено NPC: {npcNames.Count}");
+        }
+        catch (MySqlException ex)
+        {
+            Debug.LogError($"Ошибка при поиске NPC: {ex.Message}");
+        }
+
+        return npcNames;
+    }
+
+    /// Получает список всех событий, которые могут привести к указанной концовке.
+    /// </summary>
+    /// <returns>Список описаний событий, связанных с конкретной концовкой.</returns>
+    public List<string> GetEventsLeadingToEnding(int endingId)
+    {
+        Debug.Log($"--- Поиск событий, ведущих к концовке ID={endingId} ---");
+        List<string> eventDescriptions = new List<string>();
+
+        // Этот запрос соединяет таблицы Events и Answers, чтобы найти все события,
+        // ответы в которых связаны с указанным ID концовки.
+        // DISTINCT используется, чтобы избежать дублирования событий, если несколько
+        // ответов в одном событии ведут к одной и той же концовке.
+        string sql = @"
+            SELECT DISTINCT e.description 
+            FROM Events e
+            JOIN Answers a ON e.id_events = a.id_events
+            WHERE a.id_endings = @ending_id";
+
+        MySqlCommand cmd = new MySqlCommand(sql, connection);
+        cmd.Parameters.AddWithValue("@ending_id", endingId);
+
+        try
+        {
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read()) // Проходим по всем найденным событиям
+                {
+                    eventDescriptions.Add(reader.GetString("description"));
+                }
+            }
+            Debug.Log($"Найдено событий, ведущих к концовке ID={endingId}: {eventDescriptions.Count}");
+        }
+        catch (MySqlException ex)
+        {
+            Debug.LogError($"Ошибка при поиске событий для концовки: {ex.Message}");
+        }
+
+        return eventDescriptions;
+    }
+
     void OnApplicationQuit()
     {
         if (connection != null && connection.State == System.Data.ConnectionState.Open)
